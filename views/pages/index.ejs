@@ -1,0 +1,142 @@
+<html>
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
+
+</head>
+
+<body class="container-fluid">
+  <br />
+  <h1>Bootstrap 5.0 + ejs + axios (front end) + nodejs + expressjs + mariadb (back end)</h1>
+  <blockquote>
+    The source code will be at the description . Subscribe for more weird thing crud .. 
+    It's all about pattern  
+  </blockquote>
+  <% if(notification != ""){ %>
+  <div class="alert alert-info">
+    <%= notification %>
+  </div>
+  <% } %>
+  <table class="table table-striped">
+    <thead class="table-light">
+      <tr>
+        <td>
+          <button type="button" onclick="refreshMe()" class="btn btn-primary">
+            <i class="bi bi-tropical-storm"></i>
+          </button>
+        </td>
+        <td>
+          <input type="text" class="form-control" id="name" placeholder="Name" />
+        </td>
+        <td>
+          <input type="text" class="form-control" id="age" placeholder="Age" />
+        </td>
+        <td>
+          <button type="button" onclick="createRecord()" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i>
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <th>Person Id</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.forEach(element => { %>
+      <tr>
+        <td>
+          <%= element.personId %> </td>
+        <td><input type="text" class="form-control" id="<%= element.personId %>_name" value="<%= element.name %>">
+        </td>
+        <td><input type="text" class="form-control" id="<%= element.personId %>_age" value="<%= element.age %>">
+        </td>
+
+        <td>
+          <div class="btn-group">
+            <button type="button" onclick="updateRecord('<%= element.personId %>')" class="btn btn-warning">
+              <i class="bi bi-file-diff"></i>
+            </button>
+            <button type="button" onclick="deleteRecord('<%= element.personId %>')" class="btn btn-danger">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <script>
+    // you can use jquery to get element value or native also no problem both of them 
+    function refreshMe() {
+      window.location.href = "http://localhost:3000/";
+    }
+    var url = "http://localhost:3000";
+
+    function createRecord() {
+      // we renaming it in code so easir to diff 
+      axios.post(url + '/api', {
+          "mode": "create",
+          "name": document.getElementById("name").value,
+          "age": document.getElementById("age").value
+        })
+        .then(function(response) {
+          var data = response.data;
+          if (data.status) {
+            window.location.href = url + "/?notification=Create Success";
+          } else {
+            console.log("something wrong");
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+
+    function updateRecord(personId) {
+      axios.post(url + '/api', {
+          "mode": "update",
+          "name": document.getElementById(personId + "_name").value,
+          "age": document.getElementById(personId + "_age").value,
+          "personId": personId
+        })
+        .then(function(response) {
+          var data = response.data;
+          if (data.status) {
+            window.location.href = url + "/?notification=Update Success";
+          } else {
+            console.log("something wrong");
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+
+    function deleteRecord(personId) {
+      axios.post(url + '/api', {
+          "mode": "delete",
+          "personId": personId
+        })
+        .then(function(response) {
+          var data = response.data;
+          if (data.status) {
+            window.location.href = url + "/?notification=Delete Success";
+          } else {
+            console.log("something wrong");
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  </script>
+</body>
+
+</html>
